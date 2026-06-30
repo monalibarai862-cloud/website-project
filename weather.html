@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Weather App</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<style>
+
+body{
+
+font-family:Arial;
+margin:0;
+min-height:100vh;
+
+background:linear-gradient(135deg,#2193b0,#6dd5ed);
+
+}
+
+
+header{
+
+text-align:center;
+color:white;
+padding:35px;
+
+}
+
+
+
+.search{
+
+text-align:center;
+margin:20px;
+
+}
+
+
+
+input{
+
+width:60%;
+padding:15px;
+
+border-radius:30px;
+
+border:none;
+
+font-size:16px;
+
+}
+
+
+
+button{
+
+padding:14px 25px;
+
+border:none;
+
+border-radius:25px;
+
+background:#0066ff;
+
+color:white;
+
+cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+transform:scale(1.1);
+
+}
+
+
+
+.weather{
+
+background:white;
+
+width:380px;
+
+margin:30px auto;
+
+padding:30px;
+
+border-radius:25px;
+
+text-align:center;
+
+box-shadow:0 10px 30px gray;
+
+}
+
+
+
+.icon{
+
+font-size:70px;
+
+}
+
+
+
+.details{
+
+display:flex;
+
+justify-content:space-around;
+
+margin-top:20px;
+
+}
+
+
+
+.box{
+
+background:#eee;
+
+padding:15px;
+
+border-radius:15px;
+
+}
+
+
+
+</style>
+
+
+</head>
+
+
+<body>
+
+
+
+<header>
+
+
+<h1>
+🌤 Weather App
+</h1>
+
+
+<p>
+Search weather of any city or village
+</p>
+
+
+</header>
+
+
+
+
+
+
+<div class="search">
+
+
+<input id="city"
+placeholder="Enter city/village name">
+
+
+<button onclick="getWeather()">
+
+Search
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="weather">
+
+
+<div class="icon" id="icon">
+
+🌍
+
+</div>
+
+
+<h2 id="place">
+
+Location
+
+</h2>
+
+
+<h1 id="temp">
+
+-- °C
+
+</h1>
+
+
+<h3 id="condition">
+
+Search weather
+
+</h3>
+
+
+
+
+<div class="details">
+
+
+<div class="box">
+
+Humidity
+
+<br>
+
+<span id="humidity">
+
+--
+
+</span> %
+
+</div>
+
+
+
+<div class="box">
+
+Wind
+
+<br>
+
+<span id="wind">
+
+--
+
+</span> km/h
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+async function getWeather(){
+
+
+let city =
+document.getElementById("city").value;
+
+
+
+if(city==""){
+
+
+alert("Please enter location");
+
+return;
+
+}
+
+
+
+
+
+try{
+
+
+// Finding latitude and longitude
+
+
+let geo = await fetch(
+
+`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1`
+
+);
+
+
+
+let location = await geo.json();
+
+
+
+
+if(!location.results){
+
+
+alert("Location not found");
+
+return;
+
+}
+
+
+
+
+
+let placeData =
+location.results[0];
+
+
+
+let lat =
+placeData.latitude;
+
+
+let lon =
+placeData.longitude;
+
+
+
+
+
+
+
+// Getting weather
+
+
+
+let weather = await fetch(
+
+
+`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m`
+
+
+);
+
+
+
+let data =
+await weather.json();
+
+
+
+
+let current =
+data.current_weather;
+
+
+
+
+
+document.getElementById("place")
+.innerHTML=
+
+placeData.name +
+", " +
+(placeData.country || "");
+
+
+
+
+
+document.getElementById("temp")
+.innerHTML=
+
+current.temperature +
+" °C";
+
+
+
+
+
+document.getElementById("wind")
+.innerHTML=
+
+current.windspeed;
+
+
+
+
+
+let code=current.weathercode;
+
+
+
+let text="";
+
+let emoji="";
+
+
+
+if(code==0){
+
+text="Clear Sky";
+
+emoji="☀️";
+
+}
+
+else if(code<4){
+
+text="Cloudy";
+
+emoji="☁️";
+
+}
+
+else if(code<60){
+
+text="Rain";
+
+emoji="🌧️";
+
+}
+
+else{
+
+text="Weather Condition";
+
+emoji="🌍";
+
+}
+
+
+
+
+
+document.getElementById("condition")
+.innerHTML=text;
+
+
+
+document.getElementById("icon")
+.innerHTML=emoji;
+
+
+
+
+// humidity
+
+
+document.getElementById("humidity")
+.innerHTML=
+
+data.hourly.relativehumidity_2m[0];
+
+
+
+
+}
+
+
+
+catch(error){
+
+
+alert("Something went wrong");
+
+
+}
+
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Monali Cooking Website</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:#fff7ed;
+margin:0;
+}
+
+
+
+header{
+
+background:linear-gradient(135deg,#ff9966,#ff5e62);
+color:white;
+text-align:center;
+padding:35px;
+
+}
+
+
+
+.search{
+
+text-align:center;
+margin:30px;
+
+}
+
+
+
+input,textarea{
+
+width:80%;
+padding:12px;
+margin:10px;
+border-radius:15px;
+border:1px solid #aaa;
+
+}
+
+
+
+button{
+
+background:#ff5e62;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:25px;
+cursor:pointer;
+
+}
+
+
+
+button:hover{
+
+transform:scale(1.05);
+
+}
+
+
+
+.container{
+
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
+
+}
+
+
+
+.card{
+
+background:white;
+width:280px;
+padding:15px;
+border-radius:20px;
+box-shadow:0 5px 20px #ccc;
+transition:.4s;
+
+}
+
+
+
+.card:hover{
+
+transform:translateY(-10px);
+
+}
+
+
+
+.card img{
+
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:15px;
+
+}
+
+
+
+
+#popup{
+
+display:none;
+
+position:fixed;
+
+top:10%;
+
+left:20%;
+
+width:60%;
+
+background:white;
+
+padding:30px;
+
+border-radius:20px;
+
+box-shadow:0 0 30px gray;
+
+max-height:80%;
+
+overflow:auto;
+
+}
+
+
+
+.form{
+
+background:white;
+
+margin:40px;
+
+padding:30px;
+
+border-radius:20px;
+
+text-align:center;
+
+}
+
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+
+<header>
+
+<h1>
+🍳 Monali's Cooking Website
+</h1>
+
+<p>
+Search your favourite recipes
+</p>
+
+</header>
+
+
+
+
+
+<div class="search">
+
+
+<input id="search"
+
+placeholder="Search recipe like Maggi, Pizza..."
+
+onkeyup="searchRecipe()">
+
+
+</div>
+
+
+
+
+
+<div class="container" id="recipeList">
+
+</div>
+
+
+
+
+
+
+
+
+<div id="popup">
+
+
+<h2 id="title"></h2>
+
+
+<p id="details"></p>
+
+
+
+<button onclick="closeRecipe()">
+
+Close
+
+</button>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="form">
+
+
+<h2>
+Add Your Recipe
+</h2>
+
+
+
+<input id="newName"
+placeholder="Recipe Name">
+
+
+
+<textarea id="newDetails"
+placeholder="Ingredients and Steps">
+
+</textarea>
+
+
+
+<br>
+
+
+<button onclick="addRecipe()">
+
+Add Recipe
+
+</button>
+
+
+<p id="message"></p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<script>
+
+
+let recipes=[
+
+
+
+{
+
+name:"Pizza",
+
+image:"https://images.unsplash.com/photo-1513104890138-7c749659a591",
+
+details:`
+
+Ingredients:
+
+• Flour
+• Cheese
+• Tomato sauce
+• Onion
+• Capsicum
+• Herbs
+
+
+Steps:
+
+1. Prepare pizza dough.
+2. Spread tomato sauce.
+3. Add vegetables and cheese.
+4. Bake for 20 minutes.
+5. Serve hot.
+
+`
+
+},
+
+
+
+
+
+{
+
+name:"Pasta",
+
+image:"https://images.unsplash.com/photo-1473093295043-cdd812d0e601",
+
+details:`
+
+Ingredients:
+
+• Pasta
+• Milk
+• Cheese
+• Butter
+• Garlic
+• Herbs
+
+
+Steps:
+
+1. Boil pasta.
+2. Prepare white sauce.
+3. Mix pasta with sauce.
+4. Add cheese.
+5. Cook and serve.
+
+`
+
+},
+
+
+
+
+
+{
+
+name:"Maggi",
+
+image:"https://images.unsplash.com/photo-1612927601601-6638404737ce",
+
+details:`
+
+Ingredients:
+
+• Maggi noodles
+• Water
+• Maggi masala
+• Onion
+• Vegetables
+
+
+Steps:
+
+1. Boil water.
+2. Add noodles.
+3. Add tastemaker.
+4. Add vegetables.
+5. Cook for 2-3 minutes.
+
+`
+
+},
+
+
+
+
+
+{
+
+name:"Burger",
+
+image:"https://images.unsplash.com/photo-1568901346375-23c9450c58cd",
+
+details:`
+
+Ingredients:
+
+• Burger bun
+• Potato patty
+• Cheese
+• Lettuce
+• Sauce
+
+
+Steps:
+
+1. Prepare patty.
+2. Toast buns.
+3. Add sauce.
+4. Add vegetables.
+5. Assemble burger.
+
+`
+
+},
+
+
+
+
+
+{
+
+name:"Biryani",
+
+image:"https://images.unsplash.com/photo-1563379926898-05f4575a45d8",
+
+details:`
+
+Ingredients:
+
+• Rice
+• Spices
+• Onion
+• Vegetables
+
+
+Steps:
+
+1. Cook rice.
+2. Prepare masala.
+3. Mix layers.
+4. Cook slowly.
+5. Serve hot.
+
+`
+
+}
+
+
+
+
+
+];
+
+
+
+
+
+
+
+
+
+
+function displayRecipes(data){
+
+
+let box=document.getElementById("recipeList");
+
+
+box.innerHTML="";
+
+
+
+data.forEach(recipe=>{
+
+
+box.innerHTML += `
+
+
+<div class="card">
+
+
+<img src="${recipe.image}">
+
+
+<h2>
+${recipe.name}
+</h2>
+
+
+<button onclick="showRecipe('${recipe.name}')">
+
+View Recipe
+
+</button>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+}
+
+
+
+
+
+
+displayRecipes(recipes);
+
+
+
+
+
+
+
+
+
+
+function searchRecipe(){
+
+
+let value=document
+.getElementById("search")
+.value
+.toLowerCase();
+
+
+
+let result=recipes.filter(recipe=>
+
+recipe.name.toLowerCase()
+.includes(value)
+
+);
+
+
+
+displayRecipes(result);
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+function showRecipe(name){
+
+
+
+let recipe=
+recipes.find(r=>r.name==name);
+
+
+
+document.getElementById("title")
+.innerHTML=recipe.name;
+
+
+
+document.getElementById("details")
+.innerHTML=
+recipe.details.replace(/\n/g,"<br>");
+
+
+
+document.getElementById("popup")
+.style.display="block";
+
+
+}
+
+
+
+
+
+
+function closeRecipe(){
+
+
+document.getElementById("popup")
+.style.display="none";
+
+
+}
+
+
+
+
+
+
+
+
+
+
+function addRecipe(){
+
+
+let name=
+document.getElementById("newName").value;
+
+
+let details=
+document.getElementById("newDetails").value;
+
+
+
+if(name=="" || details==""){
+
+
+message.innerHTML=
+"Please fill all fields";
+
+
+message.style.color="red";
+
+
+return;
+
+
+}
+
+
+
+
+recipes.push({
+
+
+name:name,
+
+image:
+"https://images.unsplash.com/photo-1546069901-ba9599a7e63c",
+
+details:details
+
+
+});
+
+
+
+displayRecipes(recipes);
+
+
+
+message.innerHTML=
+"Recipe added successfully!";
+
+
+message.style.color="green";
+
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
