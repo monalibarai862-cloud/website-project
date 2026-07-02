@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration Form</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#4facfe,#00f2fe);
+}
+
+.container{
+    width:420px;
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.3);
+    animation:fadeIn .8s ease;
+}
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(-20px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#333;
+}
+
+.input-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+    transition:.3s;
+}
+
+input:focus,select:focus{
+    border-color:#4facfe;
+    outline:none;
+    box-shadow:0 0 8px rgba(79,172,254,.5);
+}
+
+button{
+    width:100%;
+    padding:13px;
+    border:none;
+    background:#4facfe;
+    color:white;
+    font-size:18px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#4d7fa8;
+}
+
+#message{
+    margin-top:15px;
+    text-align:center;
+    font-weight:bold;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>🎓 Student Registration</h2>
+
+<form id="studentForm">
+
+<div class="input-group">
+<label>Name</label>
+<input type="text" id="name" required>
+</div>
+
+<div class="input-group">
+<label>Email</label>
+<input type="email" id="email" required>
+</div>
+
+<div class="input-group">
+<label>Age</label>
+<input type="number" id="age" required>
+</div>
+
+<div class="input-group">
+<label>Course</label>
+<select id="course">
+<option>CSE</option>
+<option>IT</option>
+<option>AI & DS</option>
+<option>Mechanical</option>
+<option>Civil</option>
+</select>
+</div>
+
+<button type="submit">Save Student</button>
+
+<p id="message"></p>
+
+</form>
+
+</div>
+
+<script>
+const form = document.getElementById("studentForm");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", async function (e) {
+
+    e.preventDefault();
+
+    const student = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        age: document.getElementById("age").value,
+        course: document.getElementById("course").value
+    };
+
+    try {
+
+        const response = await fetch("/api/students", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(student)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("🎉 Student Saved Successfully!");
+
+            message.style.color = "green";
+            message.innerHTML = data.message;
+
+            form.reset();
+        } else {
+            alert("❌ Error while saving!");
+
+            message.style.color = "red";
+            message.innerHTML = data.message;
+        }
+
+    } catch (err) {
+
+        alert("❌ Server Connection Failed");
+
+        message.style.color = "red";
+        message.innerHTML = "Server not responding.";
+
+        console.log(err);
+    }
+
+});
+</script>
+</body>
+</html>
